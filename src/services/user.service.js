@@ -11,7 +11,12 @@ const getUserById = async (id) => {
     return await User.findByPk(id);
 }
 
-
+/**
+ * query 
+ * @param {Object} filter 
+ * @param {Object} options 
+ * @returns {Promise<User>}
+ */
 const queryUsers = async (filter, options) => {
     const users = await User.paginate(filter, options);
     return users;
@@ -36,7 +41,11 @@ const createUser = async (userBody) => {
  * @param {ObjectItem} email 
  */
 const getUserByEmail = async (email) => {
-
+    return User.findOne({
+        where:{
+            email
+        }
+    })
 }
 
 /**

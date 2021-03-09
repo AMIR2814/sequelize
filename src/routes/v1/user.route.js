@@ -1,23 +1,20 @@
 const express = require('express');
-// const auth = require('../../middlewares/auth');
-// const validate = require('../../middlewares/validate');
-// const userValidation = require('../../validations/user.validation');
+const auth = require('../../middlewares/auth');
+const validate = require('../../middlewares/validate');
+const { userValidation } = require('../../validations');
 const { userController } = require('../../controllers');
 
 const router = express.Router();
 
 router
   .route('/')
-  .get(userController.getUsers)
-  .post(userController.createUser)
-  ;
+  .post(auth('manageUsers'), validate(userValidation.createUser), userController.createUser)
+  .get(auth('getUsers'), validate(userValidation.getUsers), userController.getUsers);
 
-
-  router
-  .route('/:id')
-  .post(userController.updateUser)
-  .delete(userController.deleteUser)
-  ;
-
+router
+  .route('/:userId')
+  .get(auth('getUsers'), validate(userValidation.getUser), userController.getUser)
+  .patch(auth('manageUsers'), validate(userValidation.updateUser), userController.updateUser)
+  .delete(auth('manageUsers'), validate(userValidation.deleteUser), userController.deleteUser);
 
 module.exports = router;

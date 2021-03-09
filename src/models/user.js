@@ -3,6 +3,8 @@ const { Model } = require('sequelize');
 const { paginatePlugin } = require('./plugin/paginate');
 const PROTECTED_ATTRIBUTES = ['password', 'token']
 const { Op } = require("sequelize");
+const bcrypt = require('bcryptjs');
+const { STRING } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
@@ -25,9 +27,12 @@ module.exports = (sequelize, DataTypes) => {
       return await paginatePlugin(this, filter, options);
     }
 
+    static async isPasswordMatch(password, passwordDB) {
+      return bcrypt.compare(password, passwordDB);
+    };
+
     // relations
     static associate(models) {
-
     }
   };
 
@@ -48,11 +53,22 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
+    role: {
+      type: DataTypes.STRING,
+      defaultValue: 'user',
+    },
   }, {
     sequelize,
     modelName: 'User',
   });
 
-  return User;
+  const setSaltAndPassword = async user => {
+    if (user.changed('password')) {
+      user.password = await bcrypt.hash(user.password, 8);
+    }
+  };
+  User.beforeCreate(setSaltAndPassword)
+  User.beforeUpdate(setSaltAndPassword)
 
+  return User;
 };
