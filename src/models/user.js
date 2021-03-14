@@ -4,7 +4,6 @@ const { paginatePlugin } = require('./plugin/paginate');
 const PROTECTED_ATTRIBUTES = ['password', 'token']
 const { Op } = require("sequelize");
 const bcrypt = require('bcryptjs');
-const { STRING } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
@@ -33,6 +32,10 @@ module.exports = (sequelize, DataTypes) => {
 
     // relations
     static associate(models) {
+      User.hasMany(models.Token, {
+        as: 'tokens',
+        foreignKey: 'user'
+      });
     }
   };
 

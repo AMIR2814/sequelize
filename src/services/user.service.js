@@ -42,7 +42,7 @@ const createUser = async (userBody) => {
  */
 const getUserByEmail = async (email) => {
     return User.findOne({
-        where:{
+        where: {
             email
         }
     })
@@ -55,23 +55,22 @@ const getUserByEmail = async (email) => {
  * @returns {Promise <User>}
  */
 const updateUserById = async (id, updateBody) => {
-    const user = getUserById(id);
+    const user = await getUserById(id);
+
     if (!user) {
         throw new ApiError(httpStatus.NOT_FOUND, 'user not found');
     }
-
-    if (await User.isEmailTaken(updateBody.email, id)) {
+    if (await User.isEmailTaken(user.dataValues.email, id)) {
         throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken')
     }
 
     await Object.assign(user, updateBody);
-    await User.update(user, {
+    console.log(user);
+    const temp = await User.update(user, {
         returning: true,
         where: { id }
     });
-
-    // TODO:: return user update after update
-
+    console.log("where", { id });
     return user;
 }
 

@@ -28,7 +28,7 @@ const getUser = {
 
 const updateUser = {
   params: Joi.object().keys({
-    userId: Joi.required().custom(objectId),
+    userId: Joi.required(),
   }),
   body: Joi.object()
     .keys({
